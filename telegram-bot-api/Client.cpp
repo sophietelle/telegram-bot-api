@@ -6137,28 +6137,30 @@ class Client::TdOnCheckMessageThreadCallback final : public TdQueryCallback {
   }
 
   void on_result(object_ptr<td_api::Object> result) final {
-    if (result->get_id() == td_api::error::ID) {
-      auto error = move_object_as<td_api::error>(result);
-      if (error->code_ == 429) {
-        LOG(WARNING) << "Failed to get message thread " << message_thread_id_ << " in " << chat_id_;
-      }
-      return fail_query_with_error(std::move(query_), std::move(error), "Message thread not found");
-    }
+    // if (result->get_id() == td_api::error::ID) {
+    //   auto error = move_object_as<td_api::error>(result);
+    //   if (error->code_ == 429) {
+    //     LOG(WARNING) << "Failed to get message thread " << message_thread_id_ << " in " << chat_id_;
+    //   }
+    //   on_success_(chat_id_, message_thread_id_, std::move(reply_parameters_), std::move(query_));
+    //   return;
+    //   // return fail_query_with_error(std::move(query_), std::move(error), "Message thread not found");
+    // }
 
-    CHECK(result->get_id() == td_api::message::ID);
-    auto full_message_id = client_->add_message(move_object_as<td_api::message>(result));
-    CHECK(full_message_id.chat_id == chat_id_);
-    CHECK(full_message_id.message_id == message_thread_id_);
+    // CHECK(result->get_id() == td_api::message::ID);
+    // auto full_message_id = client_->add_message(move_object_as<td_api::message>(result));
+    // CHECK(full_message_id.chat_id == chat_id_);
+    // CHECK(full_message_id.message_id == message_thread_id_);
 
-    const MessageInfo *message_info = client_->get_message(chat_id_, message_thread_id_, true);
-    CHECK(message_info != nullptr);
-    if (message_info->message_thread_id != message_thread_id_) {
-      return fail_query_with_error(std::move(query_), 400, "MESSAGE_THREAD_INVALID", "Message thread not found");
-    }
-    if (!is_topic_message(message_info->topic_id)) {
-      return fail_query_with_error(std::move(query_), 400, "MESSAGE_THREAD_INVALID",
-                                   "Message thread is not a forum topic thread");
-    }
+    // const MessageInfo *message_info = client_->get_message(chat_id_, message_thread_id_, true);
+    // CHECK(message_info != nullptr);
+    // // if (message_info->message_thread_id != message_thread_id_) {
+    // //   return fail_query_with_error(std::move(query_), 400, "MESSAGE_THREAD_INVALID", "Message thread not found");
+    // // }
+    // if (!is_topic_message(message_info->topic_id)) {
+    //   return fail_query_with_error(std::move(query_), 400, "MESSAGE_THREAD_INVALID",
+    //                                "Message thread is not a forum topic thread");
+    // }
 
     on_success_(chat_id_, message_thread_id_, std::move(reply_parameters_), std::move(query_));
   }
